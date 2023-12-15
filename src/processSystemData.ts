@@ -1,34 +1,34 @@
-import { UndergroundSystem } from './undergroundSystem';
+import { UndergroundSystem } from './undergroundSystem'
 
 type UndergroundStationRecord = (
   | []
   | [string, string]
   | [number, string, number]
-)[];
+)[]
 
-const CHECK_IN_OR_CHECKOUT = 3;
-const CALCULATE_AVERAGE_TIME = 2;
+const CHECK_IN_OR_CHECKOUT = 3
+const CALCULATE_AVERAGE_TIME = 2
 
 function processSystemData(record: UndergroundStationRecord) {
-  const customerIds = new Set();
-  const undergroundStation = new UndergroundSystem();
+  const customerIds = new Set()
+  const undergroundStation = new UndergroundSystem()
 
   for (const item of record) {
-    if (item.length === CHECK_IN_OR_CHECKOUT) {
-      const [customer, stationName, time] = item;
+    if (CHECK_IN_OR_CHECKOUT === item.length) {
+      const [customer, stationName, time] = item
 
       if (!customerIds.has(customer)) {
-        undergroundStation.checkIn(customer, stationName, time);
+        undergroundStation.checkIn(customer, stationName, time)
         // Add customer id after checking in
-        customerIds.add(customer);
+        customerIds.add(customer)
       } else {
-        undergroundStation.checkOut(customer, stationName, time);
+        undergroundStation.checkOut(customer, stationName, time)
         // Remove customer id after checking out
-        customerIds.delete(customer);
+        customerIds.delete(customer)
       }
-    } else if (item.length === CALCULATE_AVERAGE_TIME) {
-      const [statStationName, endStationName] = item;
-      undergroundStation.getAverageTime(statStationName, endStationName);
+    } else if (CALCULATE_AVERAGE_TIME === item.length) {
+      const [statStationName, endStationName] = item
+      undergroundStation.getAverageTime(statStationName, endStationName)
     }
   }
 }
@@ -47,7 +47,7 @@ const record_1: UndergroundStationRecord = [
   ['Leyton', 'Waterloo'],
   [10, 'Waterloo', 38],
   ['Leyton', 'Waterloo'],
-];
+]
 
 const record_2: UndergroundStationRecord = [
   [],
@@ -60,13 +60,13 @@ const record_2: UndergroundStationRecord = [
   [2, 'Leyton', 21],
   [2, 'Paradise', 30],
   ['Leyton', 'Paradise'],
-];
+]
 
-const records = [record_1, record_2];
+const records = [record_1, record_2]
 
-console.time('debug');
+console.time('debug')
 for (const record of records) {
-  processSystemData(record);
+  processSystemData(record)
   console.log('\n')
 }
-console.timeEnd('debug');
+console.timeEnd('debug')

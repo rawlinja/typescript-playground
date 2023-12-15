@@ -106,11 +106,11 @@ enum TreeSelectState {
   PartiallyChecked,
 }
 
-const UNCHECKED = '[]';
-const CHECKED = '[v]';
-const PARTIALLY_CHECKED = '[o]';
+const UNCHECKED = '[]'
+const CHECKED = '[v]'
+const PARTIALLY_CHECKED = '[o]'
 
-type NullableTreeSelectNode = TreeSelectNode | undefined;
+type NullableTreeSelectNode = TreeSelectNode | undefined
 
 class TreeSelectNode {
   constructor(
@@ -118,13 +118,13 @@ class TreeSelectNode {
     private state: TreeSelectState = TreeSelectState.Unchecked
   ) {}
 
-  children: TreeSelectNode[] = [];
-  parent: NullableTreeSelectNode = undefined;
+  children: TreeSelectNode[] = []
+  parent: NullableTreeSelectNode = undefined
 
   private setState(state: TreeSelectState) {
-    this.state = state;
+    this.state = state
     if (this.parent) {
-      this.parent.bubbleState();
+      this.parent.bubbleState()
     }
   }
 
@@ -137,53 +137,53 @@ class TreeSelectNode {
     if (
       this.leaves().every((node) => node.state === TreeSelectState.Unchecked)
     ) {
-      this.setState(TreeSelectState.Unchecked);
+      this.setState(TreeSelectState.Unchecked)
     } else if (
       this.leaves().every((node) => node.state === TreeSelectState.Checked)
     ) {
-      this.setState(TreeSelectState.Checked);
+      this.setState(TreeSelectState.Checked)
     } else if (
       this.leaves().some((node) => node.state === TreeSelectState.Checked)
     ) {
-      this.setState(TreeSelectState.PartiallyChecked);
+      this.setState(TreeSelectState.PartiallyChecked)
     }
   }
 
   private subTree(): TreeSelectNode[] {
-    const result: TreeSelectNode[] = [];
-    const stack: TreeSelectNode[] = [this];
+    const result: TreeSelectNode[] = []
+    const stack: TreeSelectNode[] = [this]
 
     while (stack.length) {
-      const node = stack.pop();
+      const node = stack.pop()
       if (node) {
-        result.push(node);
-        const children = node.children;
+        result.push(node)
+        const children = node.children
         for (const child of children) {
-          stack.push(child);
+          stack.push(child)
         }
       }
     }
 
-    return result;
+    return result
   }
 
   private leaves(): TreeSelectNode[] {
-    return this.subTree().filter((node) => !node.hasChildren());
+    return this.subTree().filter((node) => !node.hasChildren())
   }
 
   private level(): number {
-    return !this.parent ? 0 : 1 + this.parent.level();
+    return !this.parent ? 0 : 1 + this.parent.level()
   }
 
   getState(): TreeSelectState {
-    return this.state;
+    return this.state
   }
 
   toggleState(): void {
     if (this.state === TreeSelectState.Checked) {
-      this.setState(TreeSelectState.Unchecked);
+      this.setState(TreeSelectState.Unchecked)
     } else {
-      this.setState(TreeSelectState.Checked);
+      this.setState(TreeSelectState.Checked)
     }
   }
 
@@ -195,11 +195,11 @@ class TreeSelectNode {
         all the leaf nodes in the sub-tree
      */
   click(): void {
-    const state = this.state;
+    const state = this.state
 
     if (!this.hasChildren()) {
-      this.toggleState();
-      return;
+      this.toggleState()
+      return
     }
 
     if (
@@ -207,36 +207,36 @@ class TreeSelectNode {
       this.state === TreeSelectState.PartiallyChecked
     ) {
       this.leaves().forEach((node) => {
-        node.setState(TreeSelectState.Checked);
-      });
+        node.setState(TreeSelectState.Checked)
+      })
     } else if (state === TreeSelectState.Checked) {
       this.leaves().forEach((node) => {
-        node.setState(TreeSelectState.Unchecked);
-      });
+        node.setState(TreeSelectState.Unchecked)
+      })
     }
   }
 
   hasChildren(): boolean {
-    return this.children.length > 0;
+    return this.children.length > 0
   }
 
   print(): string {
-    let result = '';
+    let result = ''
 
     for (let index = 0; index < this.level(); index++) {
-      result += '.';
+      result += '.'
     }
 
     if (this.state === TreeSelectState.Checked) {
-      result += `${CHECKED}${this.name}`;
+      result += `${CHECKED}${this.name}`
     } else if (this.state === TreeSelectState.Unchecked) {
-      result += `${UNCHECKED}${this.name}`;
+      result += `${UNCHECKED}${this.name}`
     } else {
-      result += `${PARTIALLY_CHECKED}${this.name}`;
+      result += `${PARTIALLY_CHECKED}${this.name}`
     }
 
-    return result;
+    return result
   }
 }
 
-export { TreeSelectNode, TreeSelectState };
+export { TreeSelectNode, TreeSelectState }

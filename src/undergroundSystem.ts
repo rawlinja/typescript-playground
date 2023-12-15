@@ -29,26 +29,26 @@ If a customer checks in at time t1 then checks out at time t2, then t1 < t2.All 
 */
 
 type TravelEvent = {
-  stationName: string;
-  time: number;
-};
+  stationName: string
+  time: number
+}
 
 type Trip = {
-  start: TravelEvent;
-  end?: TravelEvent;
-};
+  start: TravelEvent
+  end?: TravelEvent
+}
 
 type StationStats = {
-  customerTotalMileage: number;
-  totalTripCount: number;
-};
+  customerTotalMileage: number
+  totalTripCount: number
+}
 
 class UndergroundSystem {
   // <customer, [trips]>
-  customerTravelLog = new Map<number, Trip[]>();
+  customerTravelLog = new Map<number, Trip[]>()
 
   //<startStation, <endStation, {customerTotalMileage, totalTripCount}>>
-  stationCommuterData = new Map<string, Map<string, StationStats>>();
+  stationCommuterData = new Map<string, Map<string, StationStats>>()
 
   /**
    *
@@ -60,24 +60,24 @@ class UndergroundSystem {
     const start: TravelEvent = {
       stationName,
       time,
-    };
+    }
 
     // A customer has not checked in to any station
     if (!this.customerTravelLog.has(customer)) {
-      this.customerTravelLog.set(customer, []);
+      this.customerTravelLog.set(customer, [] as Trip[])
     }
 
     // Add the start travel event to the customer's trips
-    const trips = this.customerTravelLog.get(customer);
-    trips && (trips[trips.length] = { start });
+    const customerTrips = this.customerTravelLog.get(customer)
+    customerTrips && (customerTrips[customerTrips.length] = { start })
 
     // Record customer check in at the start station
     // if it doesn't already exist
     if (!this.stationCommuterData.has(stationName)) {
-      this.stationCommuterData.set(stationName, new Map());
+      this.stationCommuterData.set(stationName, new Map<string, StationStats>())
     }
 
-    console.log('customer', customer, 'checked in at', stationName, 'at', time);
+    console.log('customer', customer, 'checked in at', stationName, 'at', time)
   }
 
   /**
@@ -90,44 +90,38 @@ class UndergroundSystem {
     const end: TravelEvent = {
       stationName,
       time,
-    };
+    }
 
-    const trips = this.customerTravelLog.get(customer) || [];
+    const customerTrips = this.customerTravelLog.get(customer) || ([] as Trip[])
 
-    const currentTrip = trips[trips.length - 1];
-    currentTrip.end = end;
+    let lastTrip = customerTrips[customerTrips.length - 1]
+    lastTrip = { start: lastTrip.start, end }
 
-    const endStationMap = this.stationCommuterData.get(
-      currentTrip.start?.stationName || ''
-    );
+    const endStationMap =
+      this.stationCommuterData.get(lastTrip.start?.stationName) ||
+      new Map<string, StationStats>()
 
     // Create a new entry for end station
     // if it doesn't already exist
-    if (!endStationMap?.has(stationName)) {
-      endStationMap?.set(stationName, {
+    if (!endStationMap.has(stationName)) {
+      endStationMap.set(stationName, {
         customerTotalMileage: 0,
         totalTripCount: 0,
-      });
+      })
     }
 
-    const duration = time - Number(currentTrip.start?.time);
+    const tripDuration = time - lastTrip.start?.time
 
-    let { customerTotalMileage, totalTripCount } =
-      endStationMap?.get(stationName) || {};
+    let { customerTotalMileage, totalTripCount } = endStationMap.get(
+      stationName
+    ) || { customerTotalMileage: 0, totalTripCount: 0 }
 
-    customerTotalMileage = Number(customerTotalMileage) + duration;
-    totalTripCount = Number(totalTripCount) + 1;
+    customerTotalMileage = customerTotalMileage + tripDuration
+    totalTripCount = totalTripCount + 1
 
-    endStationMap?.set(stationName, { customerTotalMileage, totalTripCount });
+    endStationMap.set(stationName, { customerTotalMileage, totalTripCount })
 
-    console.log(
-      'customer',
-      customer,
-      'checked out at',
-      stationName,
-      'at',
-      time
-    );
+    console.log('customer', customer, 'checked out at', stationName, 'at', time)
   }
 
   /**
@@ -136,14 +130,16 @@ class UndergroundSystem {
    * @param endStation
    */
   getAverageTime(startStation: string, endStation: string): number {
-    const total = this.stationCommuterData
-      ?.get(startStation)
-      ?.get(endStation)?.customerTotalMileage;
-    const count = this.stationCommuterData
-      ?.get(startStation)
-      ?.get(endStation)?.totalTripCount;
+    const total = this.stationCommuterData.get(startStation)?.get(endStation)
+      ?.customerTotalMileage
+    const count = this.stationCommuterData.get(startStation)?.get(endStation)
+      ?.totalTripCount
 
-    const average = Number(total) / Number(count);
+    let average = 0
+
+    if (total && count) {
+      average = Number(total) / Number(count)
+    }
 
     console.log(
       'average time from',
@@ -152,10 +148,10 @@ class UndergroundSystem {
       endStation,
       'is',
       average
-    );
+    )
 
-    return average;
+    return average
   }
 }
 
-export { UndergroundSystem };
+export { UndergroundSystem }
